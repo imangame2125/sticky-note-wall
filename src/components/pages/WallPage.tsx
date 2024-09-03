@@ -1,12 +1,15 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import WallTemplate from "../templates/WallTemplate";
+import EditNoteModal from "../organisms/EditNoteModal";
 
-const WallPage: FC = () => {
+const WallPage: React.FC = () => {
   const [notes, setNotes] = useState<
     { id: number; text: string; deadline: Date }[]
   >([]);
   const [noteText, setNoteText] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [currentNoteId, setCurrentNoteId] = useState<number | null>(null);
 
   const addNote = () => {
     if (noteText && deadline) {
@@ -21,21 +24,29 @@ const WallPage: FC = () => {
     }
   };
 
-  const editNote = (id: number) => {
-    const updatedText = prompt("Edit note:");
-    const updatedDeadline = prompt("Edit deadline (yyyy-mm-ddThh:mm):");
-    if (updatedText && updatedDeadline) {
+  const startEditNote = (id: number) => {
+    const noteToEdit = notes.find((note) => note.id === id);
+    if (noteToEdit) {
+      setCurrentNoteId(id);
+      setNoteText(noteToEdit.text);
+      setDeadline(noteToEdit.deadline.toISOString().slice(0, 16));
+      setIsEditing(true);
+    }
+  };
+
+  const saveEditNote = () => {
+    if (currentNoteId !== null) {
       setNotes(
         notes.map((note) =>
-          note.id === id
-            ? {
-                ...note,
-                text: updatedText,
-                deadline: new Date(updatedDeadline),
-              }
+          note.id === currentNoteId
+            ? { ...note, text: noteText, deadline: new Date(deadline) }
             : note
         )
       );
+      setIsEditing(false);
+      setCurrentNoteId(null);
+      setNoteText("");
+      setDeadline("");
     }
   };
 
@@ -70,19 +81,31 @@ const WallPage: FC = () => {
   };
 
   return (
-    <WallTemplate
-      notes={notes}
-      noteText={noteText}
-      deadline={deadline}
-      onTextChange={(e) => setNoteText(e.target.value)}
-      onDeadlineChange={(e) => setDeadline(e.target.value)}
-      onSubmit={addNote}
-      onEdit={editNote}
-      onDelete={deleteNote}
-      onDragStart={onDragStart}
-      onDrop={onDrop}
-      onDragOver={onDragOver}
-    />
+    <div>
+      <WallTemplate
+        notes={notes}
+        noteText={noteText}
+        deadline={deadline}
+        onTextChange={(e) => setNoteText(e.target.value)}
+        onDeadlineChange={(e) => setDeadline(e.target.value)}
+        onSubmit={addNote}
+        onEdit={startEditNote}
+        onDelete={deleteNote}
+        onDragStart={onDragStart}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+      />
+      {isEditing && (
+        <EditNoteModal
+          noteText={noteText}
+          deadline={deadline}
+          onTextChange={(e) => setNoteText(e.target.value)}
+          onDeadlineChange={(e) => setDeadline(e.target.value)}
+          onSave={saveEditNote}
+          onCancel={() => setIsEditing(false)}
+        />
+      )}
+    </div>
   );
 };
 
