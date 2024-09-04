@@ -20,7 +20,7 @@ const NoteForm: FC<NoteFormProps> = ({
 }) => (
   <div>
     <Textarea value={noteText} onChange={onTextChange} />
-    <Input type="datetime-local" value={deadline} onChange={onDeadlineChange} />
+    <Input type="Date" value={deadline} onChange={onDeadlineChange} />
     <Button label="Add Note" onClick={onSubmit} />
   </div>
 );

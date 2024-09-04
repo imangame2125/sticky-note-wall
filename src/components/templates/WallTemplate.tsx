@@ -37,7 +37,7 @@ const WallTemplate: FC<WallTemplateProps> = ({
       onDeadlineChange={onDeadlineChange}
       onSubmit={onSubmit}
     />
-    <div>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
       {notes.map((note) => (
         <Note
           key={note.id}
