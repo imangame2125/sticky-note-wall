@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import WallTemplate from "../templates/WallTemplate";
 import EditNoteModal from "../organisms/EditNoteModal";
 
-const WallPage: React.FC = () => {
+const WallPage: FC = () => {
   const [notes, setNotes] = useState<
     { id: number; text: string; deadline: Date }[]
   >([]);
